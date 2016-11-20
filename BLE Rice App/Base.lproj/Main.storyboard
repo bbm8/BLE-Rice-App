@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="O8T-nN-Ncb">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <scenes>
+        <!--BLE App-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="bleMenuController" customModule="BLE_Rice_App" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Lqt-hf-1u2">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="HaF-UX-KTa"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Lqt-hf-1u2" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="2AY-Zr-giX"/>
+                            <constraint firstItem="Lqt-hf-1u2" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="RYm-Yy-K5g"/>
+                            <constraint firstItem="Lqt-hf-1u2" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="cGr-dY-az8"/>
+                            <constraint firstAttribute="trailing" secondItem="Lqt-hf-1u2" secondAttribute="trailing" id="p2m-tJ-uym"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="BLE App" id="Jku-Gr-0RO">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="utr-vh-JqT">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="KoH-8D-pgM">
+                                <rect key="frame" x="233" y="7" width="71" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Scan"/>
+                                <connections>
+                                    <action selector="scan:" destination="BYZ-38-t0r" eventType="touchUpInside" id="FZP-Zx-8rX"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="Lqt-hf-1u2" id="K6q-Tk-Yyq"/>
+                        <segue destination="Bbo-2w-VSu" kind="push" identifier="segue" id="HFD-v1-GaS"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="664" y="594"/>
+        </scene>
+        <!--Controls-->
+        <scene sceneID="2ra-AO-kMu">
+            <objects>
+                <viewController id="Bbo-2w-VSu" customClass="bleMain" customModule="BLE_Rice_App" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="wgI-z7-jEo"/>
+                        <viewControllerLayoutGuide type="bottom" id="MIV-5f-0Wi"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="roX-fe-zbb">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rns-Jq-uyT">
+                                <rect key="frame" x="54" y="176" width="212" height="216"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="90"/>
+                                <state key="normal" title="LED"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="Rns-Jq-uyT" firstAttribute="centerX" secondItem="roX-fe-zbb" secondAttribute="centerX" id="XPV-gu-nvQ"/>
+                            <constraint firstItem="Rns-Jq-uyT" firstAttribute="centerY" secondItem="roX-fe-zbb" secondAttribute="centerY" id="huA-Ye-xw0"/>
+                        </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="oSJ-eR-WBo" appends="YES" id="bSs-kX-Vhc"/>
+                        </connections>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Controls" image="command-7" selectedImage="command-7" id="9qy-xf-hOh"/>
+                    <navigationItem key="navigationItem" id="UtV-41-Vpz"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="b4Z-Bw-yfq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="oSJ-eR-WBo">
+                    <connections>
+                        <action selector="tapToResignKeyboard:" destination="Bbo-2w-VSu" id="RJs-JH-xVa"/>
+                    </connections>
+                </tapGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="1095" y="594"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="5OE-WF-cAy">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="O8T-nN-Ncb" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="QEU-s5-0z8">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="ii2-eE-rBi"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0rD-oN-r5G" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="218" y="606"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="command-7" width="30" height="30"/>
+    </resources>
+</document>
