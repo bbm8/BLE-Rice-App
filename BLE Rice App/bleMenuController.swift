@@ -23,17 +23,17 @@ class bleMenuController: UIViewController, UITableViewDataSource, BLEDelegate, U
 
     }
 
-       func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return ble.peripherals.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
-        cell.textLabel?.text = ble.peripherals[indexPath.row].identifier.UUIDString
+        cell.textLabel?.text = ble.peripherals[indexPath.row].identifier.uuidString
         return cell
     }
     func bleDidUpdateState()
@@ -48,16 +48,16 @@ class bleMenuController: UIViewController, UITableViewDataSource, BLEDelegate, U
     {
         
     }
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
         ble.connectToPeripheral(ble.peripherals[indexPath.row])
         
-        performSegueWithIdentifier("segue", sender: nil)
+        performSegue(withIdentifier: "segue", sender: nil)
     }
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 
-        let destination : bleTabBarController = segue.destinationViewController as! bleTabBarController
+        let destination : bleTabBarController = segue.destination as! bleTabBarController
         destination.ble = self.ble
         (destination.viewControllers![0] as! bleMainViewController).ble = self.ble
         //(destination.viewControllers![1] as! bleGraphDataController).ble = self.ble
@@ -67,13 +67,13 @@ class bleMenuController: UIViewController, UITableViewDataSource, BLEDelegate, U
     {
         tableView.reloadData()
     }
-    func bleDidReceiveData(data: NSData?)
+    func bleDidReceiveData(_ data: Data?)
     {
         
     }
 
     
-    @IBAction func scan(sender: AnyObject)
+    @IBAction func scan(_ sender: AnyObject)
     {
         ble.startScanning(3)
     }

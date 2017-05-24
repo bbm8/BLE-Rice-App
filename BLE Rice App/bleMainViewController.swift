@@ -13,11 +13,15 @@ class bleMainViewController: UIViewController, UITextFieldDelegate{
     
     var ble : BLE = BLE()
     @IBOutlet weak var terminalTextView: UITextView!
+    @IBOutlet weak var terminalFieldView: UIView!
+    @IBOutlet weak var configurableButtonView: UIView!
+    @IBOutlet weak var editModeView: UIView!
+    
     @IBOutlet weak var terminalTextField: UITextField!
     
     @IBOutlet weak var editToggle: UISwitch!
     
-    let defaults = NSUserDefaults.standardUserDefaults()
+    let defaults = UserDefaults.standard
     
     @IBOutlet weak var one: ConfigurableButton!
     @IBOutlet weak var two: ConfigurableButton!
@@ -40,12 +44,18 @@ class bleMainViewController: UIViewController, UITextFieldDelegate{
         super.viewDidLoad()
         self.automaticallyAdjustsScrollViewInsets = false
         terminalTextField.delegate = self
-        terminalTextView.editable = false
+        terminalTextField.autocorrectionType = .no
+
+        terminalTextView.isEditable = false
         
         configurableButtons = [one,two,three,four,five,six,seven,eight,nine,ten,eleven,twelve]
         
         setNamesOfConfigurableButtons()
         setupConfigurableButtons()
+        
+        for button in configurableButtons{
+            button.backgroundColor = terminalTextView.backgroundColor?.darker(by: 30)
+        }
      
         
     }
@@ -53,22 +63,23 @@ class bleMainViewController: UIViewController, UITextFieldDelegate{
     {
         for button:ConfigurableButton in configurableButtons
         {
-            button.addTarget(self, action: #selector(buttonTapped), forControlEvents: .TouchUpInside)
-
+            button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+ 
         }
     }
-    func buttonTapped(sender:ConfigurableButton!)
+    
+    func buttonTapped(_ sender:ConfigurableButton!)
     {
-        if(editToggle.on)
+        if(editToggle.isOn)
         {
             configurableButtonToEdit = sender
             
-            performSegueWithIdentifier("segueConfigure", sender: nil)
+            performSegue(withIdentifier: "segueConfigure", sender: nil)
             
         }
         else
         {
-            if let outString = defaults.stringForKey(sender.serialCommand)
+            if let outString = defaults.string(forKey: sender.serialCommand)
             {
                 BLEwrite(outString)
             }
@@ -107,21 +118,21 @@ class bleMainViewController: UIViewController, UITextFieldDelegate{
         for button:ConfigurableButton in configurableButtons
         {
             button.layer.cornerRadius = 20
-            if let nameString = defaults.stringForKey(button.name)
+            if let nameString = defaults.string(forKey: button.name)
             {
-                button.setTitle(nameString, forState: UIControlState.Normal)
+                button.setTitle(nameString, for: UIControlState())
             }
         }
     }
-    func textFieldShouldReturn(textField: UITextField) -> Bool
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
         textField.resignFirstResponder()
         BLEwrite(textField.text!)
         return true
     }
-    func BLEwrite(outString : String)
+    func BLEwrite(_ outString : String)
     {
-        let data = outString.dataUsingEncoding(NSUTF8StringEncoding)
+        let data = outString.data(using: String.Encoding.utf8)
         ble.write(data: data!)
         terminalTextView.text = terminalTextView.text + "sent: " + outString + "\n"
         scrollDownTerminalTextView()
@@ -132,14 +143,14 @@ class bleMainViewController: UIViewController, UITextFieldDelegate{
         let range = NSMakeRange(terminalTextView.text.characters.count, 0)
         terminalTextView.scrollRangeToVisible(range)
     }
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?)
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?)
     {
-        let destination = segue.destinationViewController as! configureMenu
+        let destination = segue.destination as! configureMenu
         destination.button = configurableButtonToEdit
         destination.defaults = self.defaults
     }
    
-    @IBAction func tapToResignKeyboard(sender: AnyObject)
+    @IBAction func tapToResignKeyboard(_ sender: AnyObject)
     {
         terminalTextField.resignFirstResponder()
     }

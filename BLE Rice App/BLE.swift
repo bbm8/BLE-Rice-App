@@ -17,7 +17,7 @@ protocol BLEDelegate {
     func bleDidUpdateState()
     func bleDidConnectToPeripheral()
     func bleDidDisconenctFromPeripheral()
-    func bleDidReceiveData(data: NSData?)
+    func bleDidReceiveData(_ data: Data?)
     func blePeripheralsWasAltered()
 }
 
@@ -29,12 +29,12 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     
     var delegate: BLEDelegate?
     
-    private      var centralManager:   CBCentralManager!
-    private      var activePeripheral: CBPeripheral?
-    private      var characteristics = [String : CBCharacteristic]()
-    private      var data:             NSMutableData?
-    private(set) var peripherals     = [CBPeripheral]()
-    private      var RSSICompletionHandler: ((NSNumber?, NSError?) -> ())?
+    fileprivate      var centralManager:   CBCentralManager!
+    fileprivate      var activePeripheral: CBPeripheral?
+    fileprivate      var characteristics = [String : CBCharacteristic]()
+    fileprivate      var data:             NSMutableData?
+    fileprivate(set) var peripherals     = [CBPeripheral]()
+    fileprivate      var RSSICompletionHandler: ((NSNumber?, NSError?) -> ())?
     
     override init() {
         super.init()
@@ -43,16 +43,16 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         self.data = NSMutableData()
     }
     
-    @objc private func scanTimeout() {
+    @objc fileprivate func scanTimeout() {
         
         print("[DEBUG] Scanning stopped")
         self.centralManager.stopScan()
     }
     
     // MARK: Public methods
-    func startScanning(timeout: Double) -> Bool {
+    func startScanning(_ timeout: Double) -> Bool {
         
-        if self.centralManager.state != .PoweredOn {
+        if self.centralManager.state != .poweredOn {
             
             print("[ERROR] Couldn´t start scanning")
             return false
@@ -62,32 +62,32 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         
         // CBCentralManagerScanOptionAllowDuplicatesKey
         
-        NSTimer.scheduledTimerWithTimeInterval(timeout, target: self, selector: #selector(BLE.scanTimeout), userInfo: nil, repeats: false)
+        Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BLE.scanTimeout), userInfo: nil, repeats: false)
         
         let services:[CBUUID] = [CBUUID(string: RBL_SERVICE_UUID)]
-        self.centralManager.scanForPeripheralsWithServices(services, options: nil)
+        self.centralManager.scanForPeripherals(withServices: services, options: nil)
         
         return true
     }
     
-    func connectToPeripheral(peripheral: CBPeripheral) -> Bool {
+    func connectToPeripheral(_ peripheral: CBPeripheral) -> Bool {
         
-        if self.centralManager.state != .PoweredOn {
+        if self.centralManager.state != .poweredOn {
             
             print("[ERROR] Couldn´t connect to peripheral")
             return false
         }
         
-        print("[DEBUG] Connecting to peripheral: \(peripheral.identifier.UUIDString)")
+        print("[DEBUG] Connecting to peripheral: \(peripheral.identifier.uuidString)")
         
-        self.centralManager.connectPeripheral(peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey : NSNumber(bool: true)])
+        self.centralManager.connect(peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey : NSNumber(value: true as Bool)])
         
         return true
     }
     
-    func disconnectFromPeripheral(peripheral: CBPeripheral) -> Bool {
+    func disconnectFromPeripheral(_ peripheral: CBPeripheral) -> Bool {
         
-        if self.centralManager.state != .PoweredOn {
+        if self.centralManager.state != .poweredOn {
             
             print("[ERROR] Couldn´t disconnect from peripheral")
             return false
@@ -102,54 +102,54 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         
         guard let char = self.characteristics[RBL_CHAR_TX_UUID] else { return }
         
-        self.activePeripheral?.readValueForCharacteristic(char)
+        self.activePeripheral?.readValue(for: char)
     }
     
-    func write(data data: NSData) {
+    func write(data: Data) {
         
         guard let char = self.characteristics[RBL_CHAR_RX_UUID] else { return }
         
-        self.activePeripheral?.writeValue(data, forCharacteristic: char, type: .WithoutResponse)
+        self.activePeripheral?.writeValue(data, for: char, type: .withoutResponse)
     }
     
-    func enableNotifications(enable: Bool) {
+    func enableNotifications(_ enable: Bool) {
         
         guard let char = self.characteristics[RBL_CHAR_TX_UUID] else { return }
         
-        self.activePeripheral?.setNotifyValue(enable, forCharacteristic: char)
+        self.activePeripheral?.setNotifyValue(enable, for: char)
     }
     
-    func readRSSI(completion: (RSSI: NSNumber?, error: NSError?) -> ()) {
+    func readRSSI(_ completion: @escaping (_ RSSI: NSNumber?, _ error: NSError?) -> ()) {
         
         self.RSSICompletionHandler = completion
         self.activePeripheral?.readRSSI()
     }
     
     // MARK: CBCentralManager delegate
-    func centralManagerDidUpdateState(central: CBCentralManager) {
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
         
         switch central.state {
-        case .Unknown:
+        case .unknown:
             print("[DEBUG] Central manager state: Unknown")
             break
             
-        case .Resetting:
+        case .resetting:
             print("[DEBUG] Central manager state: Resseting")
             break
             
-        case .Unsupported:
+        case .unsupported:
             print("[DEBUG] Central manager state: Unsopported")
             break
             
-        case .Unauthorized:
+        case .unauthorized:
             print("[DEBUG] Central manager state: Unauthorized")
             break
             
-        case .PoweredOff:
+        case .poweredOff:
             print("[DEBUG] Central manager state: Powered off")
             break
             
-        case .PoweredOn:
+        case .poweredOn:
             print("[DEBUG] Central manager state: Powered on")
             break
         }
@@ -157,10 +157,10 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         self.delegate?.bleDidUpdateState()
     }
     
-    func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject],RSSI: NSNumber) {
-        print("[DEBUG] Find peripheral: \(peripheral.identifier.UUIDString) RSSI: \(RSSI)")
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any],rssi RSSI: NSNumber) {
+        print("[DEBUG] Find peripheral: \(peripheral.identifier.uuidString) RSSI: \(RSSI)")
         
-        let index = peripherals.indexOf { $0.identifier.UUIDString == peripheral.identifier.UUIDString }
+        let index = peripherals.index { $0.identifier.uuidString == peripheral.identifier.uuidString }
         
         if let index = index {
             peripherals[index] = peripheral
@@ -171,13 +171,14 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
 
     }
     
-    func centralManager(central: CBCentralManager, didFailToConnectPeripheral peripheral: CBPeripheral, error: NSError?) {
-        print("[ERROR] Could not connecto to peripheral \(peripheral.identifier.UUIDString) error: \(error!.description)")
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        print("[ERROR] Could not connecto to peripheral \(peripheral.identifier.uuidString) error: \(error!.localizedDescription)")
+        
     }
     
-    func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         
-        print("[DEBUG] Connected to peripheral \(peripheral.identifier.UUIDString)")
+        print("[DEBUG] Connected to peripheral \(peripheral.identifier.uuidString)")
         
         self.activePeripheral = peripheral
         
@@ -187,66 +188,66 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         self.delegate?.bleDidConnectToPeripheral()
     }
     
-    func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         
-        var text = "[DEBUG] Disconnected from peripheral: \(peripheral.identifier.UUIDString)"
+        var text = "[DEBUG] Disconnected from peripheral: \(peripheral.identifier.uuidString)"
         
         if error != nil {
-            text += ". Error: \(error!.description)"
+            text += ". Error: \(error!.localizedDescription)"
         }
         
         print(text)
         
         self.activePeripheral?.delegate = nil
         self.activePeripheral = nil
-        self.characteristics.removeAll(keepCapacity: false)
+        self.characteristics.removeAll(keepingCapacity: false)
         
         self.delegate?.bleDidDisconenctFromPeripheral()
     }
     
     // MARK: CBPeripheral delegate
-    func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         
         if error != nil {
-            print("[ERROR] Error discovering services. \(error!.description)")
+            print("[ERROR] Error discovering services. \(error!.localizedDescription)")
             return
         }
         
-        print("[DEBUG] Found services for peripheral: \(peripheral.identifier.UUIDString)")
+        print("[DEBUG] Found services for peripheral: \(peripheral.identifier.uuidString)")
         
         
         for service in peripheral.services! {
             let theCharacteristics = [CBUUID(string: RBL_CHAR_RX_UUID), CBUUID(string: RBL_CHAR_TX_UUID)]
             
-            peripheral.discoverCharacteristics(theCharacteristics, forService: service)
+            peripheral.discoverCharacteristics(theCharacteristics, for: service)
         }
     }
     
-    func peripheral(peripheral: CBPeripheral, didDiscoverCharacteristicsForService service: CBService, error: NSError?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         
         if error != nil {
-            print("[ERROR] Error discovering characteristics. \(error!.description)")
+            print("[ERROR] Error discovering characteristics. \(error!.localizedDescription)")
             return
         }
         
-        print("[DEBUG] Found characteristics for peripheral: \(peripheral.identifier.UUIDString)")
+        print("[DEBUG] Found characteristics for peripheral: \(peripheral.identifier.uuidString)")
         
         for characteristic in service.characteristics! {
-            self.characteristics[characteristic.UUID.UUIDString] = characteristic
+            self.characteristics[characteristic.uuid.uuidString] = characteristic
         }
         
         enableNotifications(true)
     }
     
-    func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         
         if error != nil {
             
-            print("[ERROR] Error updating value. \(error!.description)")
+            print("[ERROR] Error updating value. \(error!.localizedDescription)")
             return
         }
         
-        if characteristic.UUID.UUIDString == RBL_CHAR_TX_UUID {
+        if characteristic.uuid.uuidString == RBL_CHAR_TX_UUID {
             
             self.delegate?.bleDidReceiveData(characteristic.value)
         }
@@ -254,8 +255,8 @@ class BLE: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     
   
     
-    func peripheral(peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: NSError?) {
-        self.RSSICompletionHandler?(RSSI, error)
+    func peripheral(_ peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: Error?) {
+        self.RSSICompletionHandler?(RSSI, error as NSError?)
         self.RSSICompletionHandler = nil
     }
 }

@@ -14,7 +14,7 @@ class configureMenu: UIViewController
     @IBOutlet weak var configureMenu: UIView!
     
     var button : ConfigurableButton = ConfigurableButton()
-    var defaults : NSUserDefaults = NSUserDefaults()
+    var defaults : UserDefaults = UserDefaults()
     
     @IBOutlet weak var nameField: UITextField!
     
@@ -24,13 +24,13 @@ class configureMenu: UIViewController
     {
         super.viewDidLoad()
         configureMenu.layer.borderWidth = 1
-        configureMenu.layer.borderColor = UIColor.whiteColor().CGColor
+        configureMenu.layer.borderColor = UIColor.white.cgColor
         
-        if let serialString = defaults.stringForKey(button.serialCommand)
+        if let serialString = defaults.string(forKey: button.serialCommand)
         {
             serialField.text = serialString
         }
-        if let nameString = defaults.stringForKey(button.name)
+        if let nameString = defaults.string(forKey: button.name)
         {
             nameField.text = nameString
         }
@@ -38,27 +38,27 @@ class configureMenu: UIViewController
         
 
     }
-    @IBAction func cancelButton(sender: AnyObject)
+    @IBAction func cancelButton(_ sender: AnyObject)
     {
        
-        self.dismissViewControllerAnimated(true, completion: {});
+        self.dismiss(animated: true, completion: {});
 
     }
     
-    @IBAction func tap(sender: AnyObject)
+    @IBAction func tap(_ sender: AnyObject)
     {
         nameField.resignFirstResponder()
         serialField.resignFirstResponder()
     }
    
-    @IBAction func set(sender: AnyObject)
+    @IBAction func set(_ sender: AnyObject)
     {
-        button.setTitle(nameField.text, forState: UIControlState.Normal)
+        button.setTitle(nameField.text, for: UIControlState())
         
         defaults.setValue(serialField.text, forKey: button.serialCommand)
         defaults.setValue(nameField.text, forKey: button.name)
         defaults.synchronize()
-        self.dismissViewControllerAnimated(true, completion: {});
+        self.dismiss(animated: true, completion: {});
 
     }
     
