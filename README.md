@@ -1,2 +1,2 @@
 # BLE-Rice-App
-
+The Bluetooth Low Energy (BLE) app for Apple iOS is written in Swift and is designed to allow versatile two-way communication between nearby BLE Nano modules and Apple iPhones. The app features a Bluetooth serial terminal and acts as a configurable, 12-button Bluetooth remote controller. In addition to these features, the app is able to plot incoming data versus time in real time, ideal for logging sensor values and associated data analysis. If you would like to see a video demo, please visit this link: https://www.youtube.com/watch?v=WAJQigHNZow.
